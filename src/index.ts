@@ -16,7 +16,6 @@ app.get('/', (req, res) => {
   res.send('News Article Agent is running!');
 });
 
-// Start Kafka consumer (optional, if you set it up)
 runConsumer().catch(console.error);
 
 app.listen(port, () => {

@@ -11,13 +11,10 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     return;
   }
   try {
-    // Retrieve relevant articles from our in-memory vector DB (simulate similarity search)
     const articles = await searchArticles(query);
     
-    // Generate answer using the LLM with the retrieved article context
     const answer = await generateAnswer(query, articles);
 
-    // Build sources array from articles
     const sources = articles.map(article => ({
       title: article.title,
       url: article.url,

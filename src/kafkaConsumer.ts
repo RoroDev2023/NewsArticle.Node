@@ -28,7 +28,6 @@ export async function runConsumer() {
       const newsLink = message.value?.toString();
       if (newsLink) {
         console.log(`Received news link: ${newsLink}`);
-        // Process the news link: fetch, extract, and store article data
         await processNewsLink(newsLink);
       }
     }

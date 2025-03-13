@@ -11,7 +11,6 @@ const openaiApiKey = process.env.OPENAI_API_KEY as string;
 const configuration = new Configuration({ apiKey: openaiApiKey });
 const openai = new OpenAIApi(configuration);
 
-// Create a custom Axios instance for OpenAI requests
 const openaiAxios: AxiosInstance = axios.create({
   baseURL: "https://api.openai.com/v1",
   headers: {
@@ -20,15 +19,13 @@ const openaiAxios: AxiosInstance = axios.create({
   }
 });
 
-// Apply retry mechanism
 axiosRetry(openaiAxios, {
-  retries: 3, // Number of retry attempts
+  retries: 3, 
   retryDelay: (retryCount) => {
     console.warn(`Retrying OpenAI request... Attempt ${retryCount}`);
-    return retryCount * 2000; // Exponential backoff (2s, 4s, 6s)
+    return retryCount * 2000; 
   },
   retryCondition: (error) => {
-    // Only retry on 429 (Too Many Requests)
     return error.response?.status === 429;
   },
   shouldResetTimeout: true,
@@ -36,18 +33,13 @@ axiosRetry(openaiAxios, {
 
 console.log("Axios instance configured with retry:", openaiAxios.defaults);
 
-/**
- * Generates an answer using OpenAI's chat completion.
- */
 export async function generateAnswer(query: string, articles: Article[]): Promise<string> {
   try {
-    // Combine the content of retrieved articles to form context
     const context = articles.map(article => article.content).join("\n\n");
     const prompt = `Based on the following context, answer the query.\n\nContext:\n${context}\n\nQuery: ${query}`;
 
     console.log("Sending request to OpenAI with prompt:", prompt);
 
-    // Send request using the custom Axios instance with retry logic
     const response = await openaiAxios.post("/chat/completions", {
       model: 'gpt-3.5-turbo',
       messages: [
@@ -58,7 +50,6 @@ export async function generateAnswer(query: string, articles: Article[]): Promis
       temperature: 0.7
     });
 
-    // Extract answer safely using optional chaining
     const answer = response.data.choices?.[0]?.message?.content?.trim() || "No answer generated.";
 
     console.log("OpenAI Response:", answer);
